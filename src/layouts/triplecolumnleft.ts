@@ -115,7 +115,7 @@ class TripleColumnLeft implements ILayout {
 
       /* adjust tile weight */
       const rstackNumTile = Math.floor((tiles.length - this.masterSize) / 2);
-      const [masterTiles, lstackTiles, rstackTiles] =
+      const [masterTiles, rstackTiles, lstackTiles] =
         partitionArrayBySizes<WindowClass>(tiles, [
           this.masterSize,
           rstackNumTile,
