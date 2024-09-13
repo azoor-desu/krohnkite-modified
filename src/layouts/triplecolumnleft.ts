@@ -19,22 +19,21 @@
 // DEALINGS IN THE SOFTWARE.
 
 // Description:
-// Has a Master Stack (middle), L-stack and R-stack.
-// Fills up the Master stack vertically with windows until masterSize.
-// Once master stack count is exceeded, proceed to fill R-stack and L-stack in an alternating manner.
-class ThreeColumnLayout implements ILayout {
+// Modified behaviour from Three-Column.
+// - Master stack on the LEFT instead of middle.
+class TripleColumnLeft implements ILayout {
   public static readonly MIN_MASTER_RATIO = 0.2;
   public static readonly MAX_MASTER_RATIO = 0.75;
-  public static readonly id = "ThreeColumnLayout";
+  public static readonly id = "TripleColumnLeft";
 
-  public readonly classID = ThreeColumnLayout.id;
+  public readonly classID = TripleColumnLeft.id;
 
   public get description(): string {
-    return "Three-Column [" + this.masterSize + "]";
+    return "Triple Column Left [" + this.masterSize + "]";
   }
 
   private masterRatio: number; // ratio of horizontal screen space for master stack. Other 2 columns will have an equal split of the remaining ratio.
-  private masterSize: number; // How many windows to fit in the master column. Set by user.
+  private masterSize: number;  // How many windows to fit in the master column. Set by user.
 
   constructor() {
     this.masterRatio = 0.6;
@@ -95,33 +94,33 @@ class ThreeColumnLayout implements ILayout {
     } else if (tiles.length > this.masterSize + 1) {
       /* three columns */
       let basisGroup;
-      if (basisIndex < this.masterSize) basisGroup = 1; /* master */
+      if (basisIndex < this.masterSize) basisGroup = 0; /* master */
       else if (basisIndex < Math.floor((this.masterSize + tiles.length) / 2))
         basisGroup = 2; /* R-stack */
-      else basisGroup = 0; /* L-stack */
+      else basisGroup = 1; /* L-stack */
 
       /* adjust master-stack ratio */
       const stackRatio = 1 - this.masterRatio;
       const newRatios = LayoutUtils.adjustAreaWeights(
         area,
-        [stackRatio, this.masterRatio, stackRatio],
+        [this.masterRatio, stackRatio, stackRatio],
         CONFIG.tileLayoutGap,
         basisGroup,
         delta,
         true
       );
-      const newMasterRatio = newRatios[1];
-      const newStackRatio = basisGroup === 0 ? newRatios[0] : newRatios[2];
+      const newMasterRatio = newRatios[0];
+      const newStackRatio = basisGroup === 1 ? newRatios[1] : newRatios[2];
       this.masterRatio = newMasterRatio / (newMasterRatio + newStackRatio);
 
       /* adjust tile weight */
       const rstackNumTile = Math.floor((tiles.length - this.masterSize) / 2);
-      const [masterTiles, rstackTiles, lstackTiles] =
+      const [masterTiles, lstackTiles, rstackTiles] =
         partitionArrayBySizes<WindowClass>(tiles, [
           this.masterSize,
           rstackNumTile,
         ]);
-      const groupTiles = [lstackTiles, masterTiles, rstackTiles][basisGroup];
+      const groupTiles = [masterTiles, lstackTiles, rstackTiles][basisGroup];
       LayoutUtils.adjustAreaWeights(
         area /* we only need height */,
         groupTiles.map((tile) => tile.weight),
@@ -143,7 +142,7 @@ class ThreeColumnLayout implements ILayout {
     // if num of tiles less than/equal to master vertical window limit, 
     // only tile vertically in master column (no other columns either so yeah.)
     if (tiles.length <= this.masterSize) {
-      /* only master */
+
       LayoutUtils.splitAreaWeighted(
         area,
         tiles.map((tile) => tile.weight),
@@ -171,7 +170,7 @@ class ThreeColumnLayout implements ILayout {
       tiles[tiles.length - 1].geometry = stackArea;
 
       // if num of tiles exceeds the vertical master column limit by 2 or more,
-      // do L-stack, master and R-stack.
+      // do master, L-stack and R-stack.
     } else if (tiles.length > this.masterSize + 1) {
       /* L-stack & master & R-stack */
       const stackRatio = 1 - this.masterRatio;
@@ -179,18 +178,18 @@ class ThreeColumnLayout implements ILayout {
       /** Areas allocated to L-stack, master, and R-stack */
       const groupAreas = LayoutUtils.splitAreaWeighted(
         area,
-        [stackRatio, this.masterRatio, stackRatio],
+        [this.masterRatio, stackRatio, stackRatio],
         CONFIG.tileLayoutGap,
         true
       );
 
       const rstackSize = Math.floor((tiles.length - this.masterSize) / 2);
-      const [masterTiles, rstackTiles, lstackTiles] =
+      const [masterTiles, lstackTiles, rstackTiles] =
         partitionArrayBySizes<WindowClass>(tiles, [
           this.masterSize,
           rstackSize,
         ]);
-      [lstackTiles, masterTiles, rstackTiles].forEach((groupTiles, group) => {
+      [masterTiles, lstackTiles, rstackTiles].forEach((groupTiles, group) => {
         LayoutUtils.splitAreaWeighted(
           groupAreas[group],
           groupTiles.map((tile) => tile.weight),
@@ -201,12 +200,13 @@ class ThreeColumnLayout implements ILayout {
   }
 
   public clone(): ILayout {
-    const other = new ThreeColumnLayout();
+    const other = new TripleColumnLeft();
     other.masterRatio = this.masterRatio;
     other.masterSize = this.masterSize;
     return other;
   }
 
+  // TODO: Modify the move shortcut behaviour
   public handleShortcut(
     ctx: EngineContext,
     input: Shortcut,
@@ -222,15 +222,15 @@ class ThreeColumnLayout implements ILayout {
       case Shortcut.DWMLeft:
         this.masterRatio = clip(
           slide(this.masterRatio, -0.05),
-          ThreeColumnLayout.MIN_MASTER_RATIO,
-          ThreeColumnLayout.MAX_MASTER_RATIO
+          TripleColumnLeft.MIN_MASTER_RATIO,
+          TripleColumnLeft.MAX_MASTER_RATIO
         );
         return true;
       case Shortcut.DWMRight:
         this.masterRatio = clip(
           slide(this.masterRatio, +0.05),
-          ThreeColumnLayout.MIN_MASTER_RATIO,
-          ThreeColumnLayout.MAX_MASTER_RATIO
+          TripleColumnLeft.MIN_MASTER_RATIO,
+          TripleColumnLeft.MAX_MASTER_RATIO
         );
         return true;
       default:
@@ -239,7 +239,7 @@ class ThreeColumnLayout implements ILayout {
   }
 
   public toString(): string {
-    return "ThreeColumnLayout(nmaster=" + this.masterSize + ")";
+    return "TripleColumnLeft(nmaster=" + this.masterSize + ")";
   }
 
   private resizeMaster(ctx: EngineContext, step: -1 | 1): void {

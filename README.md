@@ -13,6 +13,12 @@ K and looks cool.
 
 ![screenshot](img/screenshot.png)
 
+## Custom modifications
+- Added Triple Column Left layout
+  - Works the same as the Three Column Layout, just that the main column is now on the left instead of the middle.
+  - Enable it by toggling layouts using SUPER + \ or SHIFT + SUPER + \
+  - Not toggle-able from the main settings menu because I didn't want to figure out how to modify config.ui
+
 ## Features
 
 - DWM-like window tiling

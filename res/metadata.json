@@ -9,12 +9,16 @@
       {
         "Email": "esjeon@hyunmu.am",
         "Name": "Eon S. Jeon"
+      },
+      {
+        "Email": "azoor-desu@proton.me",
+        "Name": "Azoor"
       }
     ],
     "Id": "krohnkite",
     "Version": "$VER",
     "License": "MIT",
-    "Website": "https://github.com/anametologin/krohnkite#readme"
+    "Website": "https://github.com/azoor-desu/krohnkite-modified#readme"
   },
   "X-Plasma-API": "declarativescript",
   "X-Plasma-API-Minimum-Version": "6.0",

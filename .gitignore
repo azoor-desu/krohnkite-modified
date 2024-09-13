@@ -8,3 +8,6 @@
 /*.qml
 *.kwinscript
 *.bak
+
+# Ignore vscode files
+*.code-workspace

@@ -16,12 +16,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/anametologin/krohnkite"
+    "url": "git+https://github.com/azoor-desu/krohnkite-modified"
   },
   "author": "Eon S. Jeon <esjeon@hyunmu.am>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/anametologin/krohnkite/issues"
+    "url": "https://github.com/azoor-desu/krohnkite-modified/issues"
   },
-  "homepage": "https://github.com/anametologin/krohnkite#readme"
+  "homepage": "https://github.com/azoor-desu/krohnkite-modified#readme"
 }

@@ -57,11 +57,8 @@ trap "{ rm -vf ${file_path_random}; }" EXIT
 cp -v "${file_path}" "${file_path_random}"
 
 # load script and run
-echo "1111111111"
 _invoke "loadDeclarativeScript" string:"${file_path_random}" string:"${plugin_name}"
-echo "22222222222"
 _invoke "start"
-echo "..........."
 if [ "$(check_loaded)" = "false" ]; then
 	echo "$(basename $0): Failed to load script: ${file_path}, ${plugin_name}" >&2
 	exit 1
