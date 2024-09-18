@@ -49,13 +49,71 @@ class TripleColumnLeft implements ILayout {
     basis: WindowClass,
     delta: RectDelta
   ): void {
+    // Nothing to do if no window or 1 window
+    if (tiles.length <= 1) return;
+
     const basisIndex = tiles.indexOf(basis);
     if (basisIndex < 0) return;
 
-    if (tiles.length === 0)
-      /* no tiles */
+    // basisIndex === 0 is master stack.
+    // Handles adjusting only master stack window.
+    if (basisIndex === 0) {
+      // Adjust master ratio
+      this.masterRatio = LayoutUtils.adjustAreaHalfWeights(
+        area,
+        this.masterRatio,
+        CONFIG.tileLayoutGap,
+        basisIndex,
+        delta,
+        true
+      );
       return;
-    else if (tiles.length <= this.masterSize) {
+    }
+
+    if (tiles.length === 2) {
+      if (delta.west != 0) {
+        // Modify MASTER RATIO.
+        this.masterRatio = LayoutUtils.adjustAreaHalfWeights(
+          area, /* we only need width */
+          this.masterRatio,
+          CONFIG.tileLayoutGap,
+          1, // left side being modified
+          delta,
+          true
+        )
+      }
+      return;
+    }
+
+    // tiles.length === 3 is 1 master on left, 2 vertical stack on right.
+    if (tiles.length === 3) {
+      // Adjust vertical ratios for right-side stack
+      const ratios = LayoutUtils.adjustAreaWeights(
+        area, // dont worry about area being the full screen, we just care about the y-height of the R-stack
+        [tiles[1].weight, tiles[2].weight],
+        CONFIG.tileLayoutGap,
+        basisIndex - 1, // target relative to tile[1] and [2] array, so 2 values only lol
+        delta,
+        false
+      );
+      tiles[1].weight = ratios[0];
+      tiles[2].weight = ratios[1];
+
+      if (delta.west != 0) {
+        // Modify MASTER RATIO.
+        this.masterRatio = LayoutUtils.adjustAreaHalfWeights(
+          area, /* we only need width */
+          this.masterRatio,
+          CONFIG.tileLayoutGap,
+          1,  // left side being modified
+          delta,
+          true
+        )
+      }
+      return;
+    }
+
+    if (tiles.length <= this.masterSize) {
       /* one column */
       LayoutUtils.adjustAreaWeights(
         area,
@@ -64,7 +122,8 @@ class TripleColumnLeft implements ILayout {
         tiles.indexOf(basis),
         delta
       ).forEach((newWeight, i) => (tiles[i].weight = newWeight * tiles.length));
-    } else if (tiles.length === this.masterSize + 1) {
+    }
+    else if (tiles.length === this.masterSize + 1) {
       /* two columns */
 
       /* adjust master-stack ratio */
@@ -91,7 +150,8 @@ class TripleColumnLeft implements ILayout {
             (masterTiles[i].weight = newWeight * masterTiles.length)
         );
       }
-    } else if (tiles.length > this.masterSize + 1) {
+    }
+    else if (tiles.length > this.masterSize + 1) {
       /* three columns */
       let basisGroup;
       if (basisIndex < this.masterSize) basisGroup = 0; /* master */
@@ -139,10 +199,52 @@ class TripleColumnLeft implements ILayout {
     tileables.forEach((tileable) => (tileable.state = WindowState.Tiled));
     const tiles = tileables;
 
+    // 1 window = whole area
+    if (tiles.length === 1) {
+      tiles[0].geometry = area;
+      return;
+    }
+
+    // 2 window = split horizontal
+    if (tiles.length === 2) {
+      const [masterArea, stackArea] = LayoutUtils.splitAreaHalfWeighted(
+        area,
+        this.masterRatio,
+        CONFIG.tileLayoutGap,
+        true
+      );
+      tiles[0].geometry = masterArea;
+      tiles[1].geometry = stackArea;
+      return;
+    }
+
+    // 3 window: split main left, stack 2 right vertically
+    if (tiles.length === 3) {
+      // Set master stack area.
+      const [masterArea, stackArea] = LayoutUtils.splitAreaHalfWeighted(
+        area,
+        this.masterRatio,
+        CONFIG.tileLayoutGap,
+        true
+      );
+      tiles[0].geometry = masterArea;
+
+      // Set other stack area.
+      // Splits the right side stack area vertically between tileables[1] and [2]
+      LayoutUtils.splitAreaWeighted(
+        stackArea,
+        [tiles[1].weight, tiles[2].weight],
+        CONFIG.tileLayoutGap,
+        false,
+        // i + 1 cos i don't want to make a new array just for stack items, so just offset by 1 (num of tiles in master stack) from the main array
+      ).forEach((tileArea, i) => (tiles[i + 1].geometry = tileArea));
+      return;
+    }
+
     // if num of tiles less than/equal to master vertical window limit, 
     // only tile vertically in master column (no other columns either so yeah.)
     if (tiles.length <= this.masterSize) {
-
+      /* only master */
       LayoutUtils.splitAreaWeighted(
         area,
         tiles.map((tile) => tile.weight),
@@ -151,7 +253,10 @@ class TripleColumnLeft implements ILayout {
 
       // if num of tiles exceeds the vertical master column limit by EXACTLY 1, 
       // do master column + R-stack. R-stack should have only 1 window.
-    } else if (tiles.length === this.masterSize + 1) {
+    }
+    // if num of tiles less than/equal to master vertical window limit, 
+    // only tile vertically in master column (no other columns either so yeah.)
+    else if (tiles.length === this.masterSize + 1) {
       /* master & R-stack (only 1 window in stack) */
       const [masterArea, stackArea] = LayoutUtils.splitAreaHalfWeighted(
         area,
@@ -171,7 +276,8 @@ class TripleColumnLeft implements ILayout {
 
       // if num of tiles exceeds the vertical master column limit by 2 or more,
       // do master, L-stack and R-stack.
-    } else if (tiles.length > this.masterSize + 1) {
+    } 
+    else if (tiles.length > this.masterSize + 1) {
       /* L-stack & master & R-stack */
       const stackRatio = 1 - this.masterRatio;
 

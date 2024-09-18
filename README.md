@@ -15,7 +15,11 @@ K and looks cool.
 
 ## Custom modifications
 - Added Triple Column Left layout
-  - Works the same as the Three Column Layout, just that the main column is now on the left instead of the middle.
+  - Is a clone of the Three Column Layout but with some modifications
+  - Main stack is now on the left side instead of the middle
+  - When there are 2 windows, the windows always split horizontally
+  - When there are 3 windows, the master window splits horizontally to the left on its own, and the other 2 windows are stacked vertically on the right side.
+  - Any more windows, and the original Three Column Layout behaviour takes over.
   - Enable it by toggling layouts using SUPER + \ or SHIFT + SUPER + \
   - Not toggle-able from the main settings menu because I didn't want to figure out how to modify config.ui
 
