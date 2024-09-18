@@ -36,6 +36,11 @@
         <default>true</default>
     </entry>
 
+    <entry name="enableThreeColAlt" type="Bool">
+	    <label>Enable/disable Three Column Alt layout</label>
+        <default>false</default>
+    </entry>
+
     <entry name="enableSpiralLayout" type="Bool">
         <label>Enable/disable Spiral layout</label>
         <default>true</default>
