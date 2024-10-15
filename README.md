@@ -1,6 +1,6 @@
 # Kröhnkite
 
-A dynamic tiling extension for KWin 6.
+A dynamic tiling extension for KWin 6 only.
 
 Kröhnkite is mainly inspired by [dwm][] from suckless folks, and aims to
 provide rock solid stability while fully integrating into KWin.
@@ -46,7 +46,6 @@ K and looks cool.
 ## Look at me
 
 1. Delete unused KWin shortcuts:
-
 ```
 qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.cleanUp
 ```
@@ -55,7 +54,6 @@ qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.cleanU
 
 ```
 xwaylandvideobridge,plasmashell,ksplashqml
-
 ```
 
 ## Installation
@@ -64,7 +62,7 @@ You can install Kröhnkite in multiple ways.
 
 ### Using .kwinscript package file
 
-You can download `krohnkite-x.x.kwinscript` file, and install it through
+You can download `krohnkite-x.x.x.x.kwinscript` file, and install it through
 _System Settings_.
 
 1.  Download the kwinscript file
@@ -73,38 +71,48 @@ _System Settings_.
 4.  Select the downloaded file
 
 Alternatively, through command-line:
-
-    kpackagetool6 -t KWin/Script -i krohnkite.kwinscript # installing new script
-    kpackagetool6 -t kwin/script -u krohnkite.kwinscript # upgrading existing script
-
-To uninstall the package:
-
+get info about package:
 ```
-kpackagetool6 -t kwin/script -r krohnkite
+kpackagetool6 -t KWin/Script -s krohnkite
+```
+install:
+```
+kpackagetool6 -t KWin/Script -i krohnkite-x.x.x.x.kwinscript
+```
+upgrade:
+```
+kpackagetool6 -t KWin/Script -u krohnkite-x.x.x.x.kwinscript
+```
+uninstall:
+```
+kpackagetool6 -t KWin/Script -r krohnkite
 ```
 
 ### Installing from Git repository
 
-The simplest method would be:
-
-    make install
-    make uninstall # to uninstall the script
-
-This will automatically build and install kwinscript package.
-
-You can also manually build package file using:
-
-    make package
-
-The generated package file can be imported from "KWin Script" dialog.
+The simplest method to automatically build and install kwinscript package would be:
+```
+ make install
+```
+You can also build `.kwinscript` package file using:
+```
+make package
+```
+uninstall package:
+```
+make uninstall
+```
 
 ### Simply Trying Out
 
 Krohnkite can be temporarily loaded without installing the script:
-
-    make run
-    make stop
-
+```
+make run
+```
+and stop:
+```
+make stop
+```
 Note that Krohnkite can destroy itself completely once it is disabled, so no
 restart is required to deactivated it.
 
@@ -117,9 +125,10 @@ restart is required to deactivated it.
 3. Type in filter string: `krohnkite`
 4. Right after `KROHNKITE: starting the script` string you can see one if you have one screen or multiple strings: Screen(output):SCREEN_NAME numbered layouts...
 5. Copy your screen name. This name usually your video port DP-2 or HDMI-A-1 or Virtual-1 for VM or something like that
-6. Open Krohnkite options: ![options](img/conf.png)
-7. Tab `Rules->Screen default layout` and type `YOUR_SCREEN_NAME:LAYOUT_ID` for example: `HDMI-A-1:2,DP-2:7`, or if you have multiple `Virtual Desktop` on screen you can write `SCREEN_NAME:DESKTOP_NAME:LAYOUT_ID`. More examples: `:2` - makes layout#2 default on all screens, `:Desktop 1:2` - makes layout#2 default on all desktops with name `Desktop 1`
-8. `Apply` -> `reboot`
+6. `LAYOUT_NAME`(the case doen't matter,`layout` ending can be omitted): `tilelayout`, `monoclelayout`, `columns`, `threecolumnlayout,` `spreadlayout`, `stairlayout`, `spirallayout`, `stackedlayout`, `floatinglayout`, `btreelayout`
+7. Open Krohnkite options: ![options](img/conf.png)
+8. Tab `Rules->Screen default layout` and type `YOUR_SCREEN_NAME:LAYOUT_NAME` for example: `HDMI-A-1:columns,DP-2:spread` or `YOUR_SCREEN_NAME:LAYOUT_ID` for example: `HDMI-A-1:2,DP-2:7`, or if you have multiple `Virtual Desktop` on screen you can write `SCREEN_NAME:DESKTOP_NAME:LAYOUT_NAME` or `SCREEN_NAME:DESKTOP_NAME:LAYOUT_ID`. More examples: `:2` - makes layout#2 default on all screens, `:Desktop 1:2` - makes layout#2 default on all desktops with name `Desktop 1`.
+9. `Apply` -> `reboot`
 
 [Video: assign default layer for screen](https://github.com/anametologin/krohnkite/assets/165245883/f569f1de-1721-4cdf-b3fb-96782a3e3189)
 

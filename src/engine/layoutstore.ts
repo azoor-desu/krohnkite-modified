@@ -29,10 +29,11 @@ class LayoutStoreEntry {
   private previousID: string;
 
   constructor(output_name: string, desktop_name?: string) {
-    let layouts_str = CONFIG.layoutOrder.map(
-      (layout, i) => i + "." + layout + ", "
+    let layouts = CONFIG.layoutOrder.map((layout) => layout.toLowerCase());
+    let layouts_str = layouts.map((layout, i) => i + "." + layout + " ");
+    print(
+      `Krohnkite: Screen(output):${output_name}, Desktop(name):${desktop_name}, layouts: ${layouts_str}`
     );
-    print(`Krohnkite: Screen(output):${output_name}, Desktop(name):${desktop_name}, layouts: ${layouts_str}`);
     this.currentIndex = 0;
     this.currentID = CONFIG.layoutOrder[0];
 
@@ -42,9 +43,15 @@ class LayoutStoreEntry {
       let cfg_desktop = cfg.length == 2 ? undefined : cfg[1];
       let cfg_screen_id_str = cfg.length == 2 ? cfg[1] : cfg[2];
       let cfg_screen_id = parseInt(cfg_screen_id_str);
-
+      if (isNaN(cfg_screen_id)) {
+        cfg_screen_id = layouts.indexOf(cfg_screen_id_str.toLowerCase());
+        cfg_screen_id =
+          cfg_screen_id >= 0
+            ? cfg_screen_id
+            : layouts.indexOf(cfg_screen_id_str.toLowerCase() + "layout");
+      }
       if (
-        (output_name === cfg_output || cfg_output === '') &&
+        (output_name === cfg_output || cfg_output === "") &&
         (desktop_name === cfg_desktop || cfg_desktop === undefined) &&
         cfg_screen_id >= 0 &&
         cfg_screen_id < CONFIG.layoutOrder.length
@@ -72,7 +79,7 @@ class LayoutStoreEntry {
   }
 
   public setLayout(targetID: string): ILayout {
-    const targetLayout = this.loadLayout(targetID);
+    let targetLayout = this.loadLayout(targetID);
     if (
       targetLayout instanceof MonocleLayout &&
       this.currentLayout instanceof MonocleLayout
@@ -80,6 +87,7 @@ class LayoutStoreEntry {
       /* toggle Monocle "OFF" */
       this.currentID = this.previousID;
       this.previousID = targetID;
+      targetLayout = this.loadLayout(this.currentID);
     } else if (this.currentID !== targetID) {
       this.previousID = this.currentID;
       this.currentID = targetID;

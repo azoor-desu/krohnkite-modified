@@ -335,4 +335,14 @@ Item {
         text: "Krohnkite: Spiral Layout";
         sequence: "";
     }
+    function getColumnsLayout() {
+        return columnsLayout;
+    }
+    ShortcutHandler {
+        id: columnsLayout;
+
+        name: "KrohnkiteColumnsLayout";
+        text: "Krohnkite: Columns Layout";
+        sequence: "";
+    }
 }

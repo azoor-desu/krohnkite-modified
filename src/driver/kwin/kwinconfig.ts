@@ -23,6 +23,8 @@ class KWinConfig implements IConfig {
   public layoutOrder: string[];
   public layoutFactories: { [key: string]: () => ILayout };
   public maximizeSoleTile: boolean;
+  public tileLayoutInitialAngle: string;
+  public columnsLayoutInitialAngle: string;
   public monocleMaximize: boolean;
   public monocleMinimizeRest: boolean;
   public stairReverse: boolean; // kwin.specific
@@ -91,6 +93,7 @@ class KWinConfig implements IConfig {
       [
         ["enableTileLayout", true, TileLayout],
         ["enableMonocleLayout", false, MonocleLayout],
+        ["enableColumnsLayout", false, ColumnsLayout],
         ["enableThreeColumnLayout", true, ThreeColumnLayout],
         ["enableTripleColumnLeft", true, TripleColumnLeft],
         ["enableSpreadLayout", false, SpreadLayout],
@@ -109,6 +112,14 @@ class KWinConfig implements IConfig {
     });
 
     this.maximizeSoleTile = KWIN.readConfig("maximizeSoleTile", false);
+    this.tileLayoutInitialAngle = KWIN.readConfig(
+      "tileLayoutInitialRotationAngle",
+      "0"
+    );
+    this.columnsLayoutInitialAngle = KWIN.readConfig(
+      "columnsLayoutInitialRotationAngle",
+      "0"
+    );
     this.monocleMaximize = KWIN.readConfig("monocleMaximize", true);
     this.monocleMinimizeRest = KWIN.readConfig("monocleMinimizeRest", false);
     this.stairReverse = KWIN.readConfig("stairReverse", false);
@@ -116,7 +127,7 @@ class KWinConfig implements IConfig {
     this.adjustLayout = KWIN.readConfig("adjustLayout", true);
     this.adjustLayoutLive = KWIN.readConfig("adjustLayoutLive", true);
     this.keepFloatAbove = KWIN.readConfig("keepFloatAbove", true);
-    this.keepTilingOnDrag = KWIN.readConfig("keepTilingOnDrag", false);
+    this.keepTilingOnDrag = KWIN.readConfig("keepTilingOnDrag", true);
     this.noTileBorder = KWIN.readConfig("noTileBorder", false);
 
     this.limitTileWidthRatio = 0;

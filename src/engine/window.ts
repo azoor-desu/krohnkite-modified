@@ -32,11 +32,13 @@ enum WindowState {
   Tiled,
   TiledAfloat,
   Undecided,
+  Dragging,
 }
 
 class WindowClass {
   public static isTileableState(state: WindowState): boolean {
     return (
+      state === WindowState.Dragging ||
       state === WindowState.Tiled ||
       state === WindowState.Maximized ||
       state === WindowState.TiledAfloat
@@ -77,7 +79,9 @@ class WindowClass {
     return WindowClass.isFloatingState(this.state);
   }
 
-  public get geometryDelta(): RectDelta {
+  public get geometryDelta(): RectDelta | null {
+    if (this.geometry === this.actualGeometry) return null;
+
     return RectDelta.fromRects(this.geometry, this.actualGeometry);
   }
 
@@ -105,7 +109,7 @@ class WindowClass {
     const state = this.state;
 
     /* cannot transit to the current state */
-    if (state === value) return;
+    if (state === value || state === WindowState.Dragging) return;
 
     if (
       (state === WindowState.Unmanaged || WindowClass.isTileableState(state)) &&
@@ -119,6 +123,12 @@ class WindowClass {
       /* save the current geometry before leaving floating state */
       this.floatGeometry = this.actualGeometry;
 
+    this.internalState = value;
+  }
+  public setDraggingState() {
+    this.internalState = WindowState.Dragging;
+  }
+  public removeDraggingState(value: WindowState) {
     this.internalState = value;
   }
 
@@ -166,6 +176,8 @@ class WindowClass {
     const state = this.state;
     debugObj(() => ["Window#commit", { state: WindowState[state] }]);
     switch (state) {
+      case WindowState.Dragging:
+        break;
       case WindowState.NativeMaximized:
         this.window.commit(undefined, undefined, false);
         break;
@@ -208,6 +220,9 @@ class WindowClass {
 
   public visible(srf: ISurface): boolean {
     return this.window.visible(srf);
+  }
+  public get minimized(): boolean {
+    return this.window.minimized;
   }
 
   public toString(): string {
