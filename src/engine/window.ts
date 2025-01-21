@@ -179,30 +179,42 @@ class WindowClass {
       case WindowState.Dragging:
         break;
       case WindowState.NativeMaximized:
-        this.window.commit(undefined, undefined, false);
+        this.window.commit(undefined, undefined, undefined);
         break;
 
       case WindowState.NativeFullscreen:
-        this.window.commit(undefined, undefined, undefined);
+        this.window.commit(undefined, undefined, WindowLayer.Normal);
         break;
 
       case WindowState.Floating:
         if (!this.shouldCommitFloat) break;
-        this.window.commit(this.floatGeometry, false, CONFIG.keepFloatAbove);
+        this.window.commit(
+          this.floatGeometry,
+          false,
+          CONFIG.floatedWindowsLayer
+        );
         this.shouldCommitFloat = false;
         break;
 
       case WindowState.Maximized:
-        this.window.commit(this.geometry, true, false);
+        this.window.commit(this.geometry, true, WindowLayer.Normal);
         break;
 
       case WindowState.Tiled:
-        this.window.commit(this.geometry, CONFIG.noTileBorder, false);
+        this.window.commit(
+          this.geometry,
+          CONFIG.noTileBorder,
+          CONFIG.tiledWindowsLayer
+        );
         break;
 
       case WindowState.TiledAfloat:
         if (!this.shouldCommitFloat) break;
-        this.window.commit(this.floatGeometry, false, CONFIG.keepFloatAbove);
+        this.window.commit(
+          this.floatGeometry,
+          false,
+          CONFIG.floatedWindowsLayer
+        );
         this.shouldCommitFloat = false;
         break;
     }

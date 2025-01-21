@@ -38,6 +38,10 @@ class EngineContext {
     this.drvctx.currentWindow = window;
   }
 
+  public get currentSurfaceId(): string {
+    return this.drvctx.currentSurface.id;
+  }
+
   constructor(private drvctx: IDriverContext, private engine: TilingEngine) {}
 
   public setTimeout(func: () => void, timeout: number): void {

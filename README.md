@@ -46,6 +46,7 @@ K and looks cool.
 ## Look at me
 
 1. Delete unused KWin shortcuts:
+
 ```
 qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.cleanUp
 ```
@@ -72,33 +73,46 @@ _System Settings_.
 
 Alternatively, through command-line:
 get info about package:
+
 ```
 kpackagetool6 -t KWin/Script -s krohnkite
 ```
+
 install:
+
 ```
 kpackagetool6 -t KWin/Script -i krohnkite-x.x.x.x.kwinscript
 ```
+
 upgrade:
+
 ```
 kpackagetool6 -t KWin/Script -u krohnkite-x.x.x.x.kwinscript
 ```
+
 uninstall:
+
 ```
 kpackagetool6 -t KWin/Script -r krohnkite
 ```
 
 ### Installing from Git repository
 
+Make sure you have `npm` and `7zip` packages installed.
 The simplest method to automatically build and install kwinscript package would be:
+
 ```
  make install
 ```
+
 You can also build `.kwinscript` package file using:
+
 ```
 make package
 ```
+
 uninstall package:
+
 ```
 make uninstall
 ```
@@ -106,31 +120,45 @@ make uninstall
 ### Simply Trying Out
 
 Krohnkite can be temporarily loaded without installing the script:
+
 ```
 make run
 ```
+
 and stop:
+
 ```
 make stop
 ```
+
 Note that Krohnkite can destroy itself completely once it is disabled, so no
 restart is required to deactivated it.
 
 ## Settings
 
+### Add a class name, a resource name or a window caption to ignore or float
+
+1. to found window's className,resourcename or caption see [readme](https://github.com/anametologin/krohnkite#search-a-window-parameters-to-filter-float-etc)
+2. you can use the name of class in square brackets: `[myNamE]` will float or ignore all windows with class or resource names such: 'myname1', 'Myname2', 'Notmyname555' etc...
+
 ### Choose layout for screen by default
 
-1. Right after system boot run KSystemLog
-2. Push ignore button
-3. Type in filter string: `krohnkite`
-4. Right after `KROHNKITE: starting the script` string you can see one if you have one screen or multiple strings: Screen(output):SCREEN_NAME numbered layouts...
-5. Copy your screen name. This name usually your video port DP-2 or HDMI-A-1 or Virtual-1 for VM or something like that
-6. `LAYOUT_NAME`(the case doen't matter,`layout` ending can be omitted): `tilelayout`, `monoclelayout`, `columns`, `threecolumnlayout,` `spreadlayout`, `stairlayout`, `spirallayout`, `stackedlayout`, `floatinglayout`, `btreelayout`
-7. Open Krohnkite options: ![options](img/conf.png)
-8. Tab `Rules->Screen default layout` and type `YOUR_SCREEN_NAME:LAYOUT_NAME` for example: `HDMI-A-1:columns,DP-2:spread` or `YOUR_SCREEN_NAME:LAYOUT_ID` for example: `HDMI-A-1:2,DP-2:7`, or if you have multiple `Virtual Desktop` on screen you can write `SCREEN_NAME:DESKTOP_NAME:LAYOUT_NAME` or `SCREEN_NAME:DESKTOP_NAME:LAYOUT_ID`. More examples: `:2` - makes layout#2 default on all screens, `:Desktop 1:2` - makes layout#2 default on all desktops with name `Desktop 1`.
-9. `Apply` -> `reboot`
+1. Open Krohnkite options: ![options](img/conf.png)
+2. Tab `Rules->Screen default layout`. Layout configuration has format `OutputName:ActivityId:VirtualDesktopName:layoutName` multi monitor example: `HDMI-A-1:99a12h44-e9a6-1142-55eedaa7-3a922a15ab08::columns,DP-2:spread,DP-3:Desktop 3:tile,:threecolumn` - result will be:
 
-[Video: assign default layer for screen](https://github.com/anametologin/krohnkite/assets/165245883/f569f1de-1721-4cdf-b3fb-96782a3e3189)
+- set `columns` layout as default on monitor `HDMI-A-1`, only on activity with id:`99a12h44-e9a6-1142-55eedaa7-3a922a15ab08`, every Virtual Desktops on this activity.(if you specify `activity id` you have to to specify virtual desktop name or leave it blank)
+- set `spreadlayout` layout as default on monitor `DP-2`, every Activities, every Virtual Desktops;
+- set `tilelayout` layout as default on monitor `DP-3`, on every activity, only on virtual desktop with name `Desktop 3`
+- set `threecolumnlayout` layout as default on all monitors,all activities and all Virtual Desktops not covered by the previous rules
+
+2. How to find `outputName`, `activityId`, `VirtualDesktopName`, `layoutName`:
+   Right after system boot run KSystemLog
+
+- Push ignore button
+- Type in filter string: `krohnkite`
+- Right after `KROHNKITE: starting the script` string you will see one if you have one monitor or multiple lines: Screen(output):`Screen Name`,Desktop(name):`Virtual Desktop Name`,Activity:`Activity Id`,layouts: `numbered layouts` (the case doesn't matter,`layout` ending can be omitted): `tilelayout`, `monoclelayout`, `columns`, `threecolumnlayout,` `spreadlayout`, `stairlayout`, `spirallayout`, `stackedlayout`, `floatinglayout`, `btreelayout`
+
+3. `Apply` -> `reboot`
 
 ### Search a window parameters to filter, float etc.
 
@@ -163,7 +191,8 @@ restart is required to deactivated it.
 | Meta + I         | Increase           |
 | Meta + D         | Decrease           |
 | Meta + F         | Toggle Floating    |
-| Meta + \         | Cycle Layout       |
+| Meta + \         | Next Layout        |
+| Meta + \|        | Previous Layout    |
 |                  |                    |
 | Meta + Return    | Set as Master      |
 |                  |                    |

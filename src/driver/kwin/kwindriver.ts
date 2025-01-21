@@ -405,6 +405,9 @@ class KWinDriver implements IDriverContext {
         "fullscreen=" + client.fullScreen
       )
     );
+    this.connect(client.desktopsChanged, () =>
+      this.control.onDesktopsChanged(this, window)
+    );
 
     this.connect(client.interactiveMoveResizeStepped, (geometry) => {
       if (client.resize) return;

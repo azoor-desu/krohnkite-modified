@@ -98,6 +98,7 @@ class TestWindow implements IDriverWindow {
   public fullScreen: boolean;
   public geometry: Rect;
   public keepAbove: boolean;
+  public keepBelow: boolean;
   public maximized: boolean;
   public minimized: boolean;
   public noBorder: boolean;
@@ -118,15 +119,23 @@ class TestWindow implements IDriverWindow {
     this.fullScreen = false;
     this.geometry = geometry || new Rect(0, 0, 100, 100);
     this.keepAbove = false;
+    this.keepBelow = false;
     this.maximized = false;
     this.minimized = false;
     this.noBorder = false;
   }
 
-  public commit(geometry?: Rect, noBorder?: boolean, keepAbove?: boolean) {
+  public commit(
+    geometry?: Rect,
+    noBorder?: boolean,
+    windowLayer?: WindowLayer
+  ) {
     if (geometry) this.geometry = geometry;
     if (noBorder !== undefined) this.noBorder = noBorder;
-    if (keepAbove !== undefined) this.keepAbove = keepAbove;
+    if (windowLayer !== undefined) {
+      if (windowLayer === WindowLayer.Above) this.keepAbove = true;
+      else if (windowLayer === WindowLayer.Below) this.keepBelow = true;
+    }
   }
 
   public focus() {

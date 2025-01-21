@@ -121,14 +121,18 @@ interface IConfig {
   layoutFactories: { [key: string]: () => ILayout };
   tileLayoutInitialAngle: string;
   columnsLayoutInitialAngle: string;
+  columnsBalanced: boolean;
+  columnsLayerConf: string[];
   monocleMaximize: boolean;
-  maximizeSoleTile: boolean;
+  soleWindowWidth: number;
+  soleWindowHeight: number;
   //#endregion
 
   //#region Features
   adjustLayout: boolean;
   adjustLayoutLive: boolean;
-  keepFloatAbove: boolean;
+  floatedWindowsLayer: WindowLayer;
+  tiledWindowsLayer: WindowLayer;
   keepTilingOnDrag: boolean;
   noTileBorder: boolean;
   limitTileWidthRatio: number;
@@ -160,7 +164,7 @@ interface IDriverWindow {
 
   surface: ISurface;
 
-  commit(geometry?: Rect, noBorder?: boolean, keepAbove?: boolean): void;
+  commit(geometry?: Rect, noBorder?: boolean, windowLayer?: WindowLayer): void;
   visible(srf: ISurface): boolean;
 }
 

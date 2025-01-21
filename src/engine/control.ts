@@ -225,6 +225,9 @@ class TilingController {
   public onWindowFocused(ctx: IDriverContext, window: WindowClass) {
     window.timestamp = new Date().getTime();
   }
+  public onDesktopsChanged(ctx: IDriverContext, window: WindowClass) {
+    window.state = WindowState.Undecided;
+  }
 
   public onShortcut(ctx: IDriverContext, input: Shortcut, data?: any) {
     if (CONFIG.directionalKeyMode === "dwm") {

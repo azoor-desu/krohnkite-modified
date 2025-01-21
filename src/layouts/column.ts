@@ -53,6 +53,7 @@ class ColumnLayout implements ILayout {
     this.numberFloatedOrMinimized = 0;
     this.timestamp = 0;
   }
+
   public get size(): number {
     return this.windowIds.size - this.numberFloatedOrMinimized;
   }
